@@ -29,7 +29,56 @@ app.use("/", articlesController);
 
 
 app.get("/", (req,res) => {
-    res.render("index");
+    Article.findAll({
+        order: [
+            ['id','DESC']
+        ]
+    }).then(articles => {
+        Category.findAll().then(categories => {
+            res.render("index", {articles: articles, categories: categories});
+        });  
+    })
+})
+
+app.get("/:slug", (req,res) => {
+    var slug = req.params.slug;
+    Article.findOne({ 
+        where: {
+            slug: slug
+    }
+    }).then(article => {
+        if(article != undefined){
+            Category.findAll().then(categories => {
+                res.render("article", {article: article, categories: categories});
+            });  
+        }else{
+            res.redirect("/");
+        }
+    }).catch( err => {
+        res.redirect("/");
+    })
+})
+
+app.get("/category/:slug", (req,res) => {
+    var slug = req.params.slug;
+    Category.findOne({
+        where: {
+            slug: slug
+        },
+        include: [{model: Article}]
+    }).then(category => { //se achar a categoria, faz isso
+        if(category != undefined){
+
+            Category.findAll().then(categories => {
+                res.render("index", {articles: category.articles, categories: categories}); //acessando o foreign key com include (join)
+            })
+
+        }else{
+            res.redirect("/");
+        }
+    }).catch(err => {
+        res.redirect("/");
+    })
 })
 
 app.listen(8080, () => {

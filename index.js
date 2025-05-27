@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const connection = require('./database/database');
+const session = require('express-session');
 
 const categoriesController = require('./categories/categoriesController');
 const articlesController = require('./articles/articlesController');
@@ -11,8 +12,18 @@ const Article = require('./articles/article');
 const Category = require('./categories/category');
 const User = require('./user/User');
 
-
 app.set('view engine', 'ejs');
+
+//sessions
+
+//redis, para media e larga escala, evitando problemas 
+app.use(session({
+    secret: "qualquercoisa", //senha para decriptar suas sessoes com mais seguranca
+    cookie: { //referencia para a sessao no servidor
+        maxAge: 30000000 //desloga automaticamente apos certo periodo, em ms
+    }
+}))
+
 
 //static
 app.use(express.static('public')) //pasta onde fica os arquivos statics
@@ -32,7 +43,6 @@ connection
 app.use("/", categoriesController);
 app.use("/", articlesController);
 app.use("/", userController);
-
 
 app.get("/", (req,res) => {
     Article.findAll({

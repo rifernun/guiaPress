@@ -26,7 +26,7 @@ router.post("/user/create", (req,res) => {
                 email: email,
                 password: hash
             }).then(() => {
-                res.redirect("/");
+                res.redirect("/admin/articles");
             }).catch(err => {
                 res.redirect("/");
             })
@@ -54,7 +54,7 @@ router.post("/authenticate", (req,res) => {
                     id: user.id,
                     email: user.email
                 }
-                res.json(req.session.user);
+                res.redirect("/admin/articles");
             }else {
                 console.log("hash nao bateu");
                 res.redirect("/login");
@@ -64,6 +64,11 @@ router.post("/authenticate", (req,res) => {
             res.redirect("/login");
         }
     })
+})
+
+router.get("/logout", (req,res) => { //sim é só isso
+    req.session.user = undefined;
+    res.redirect("/");
 })
 
 module.exports = router;

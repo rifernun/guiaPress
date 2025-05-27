@@ -2,10 +2,15 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const connection = require('./database/database');
+
 const categoriesController = require('./categories/categoriesController');
 const articlesController = require('./articles/articlesController');
+const userController = require('./user/UsersController');
+
 const Article = require('./articles/article');
 const Category = require('./categories/category');
+const User = require('./user/User');
+
 
 app.set('view engine', 'ejs');
 
@@ -26,6 +31,7 @@ connection
 
 app.use("/", categoriesController);
 app.use("/", articlesController);
+app.use("/", userController);
 
 
 app.get("/", (req,res) => {
